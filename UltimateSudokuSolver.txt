@@ -1,0 +1,190 @@
+import java.util.*;
+
+public class UltimateSudokuSolver {
+
+    static int calls = 0;
+    static int totalSolutions = 0;
+
+    public static void main(String[] args) {
+        int[][] board = readInput();
+        List<int[]> emptyCells = getEmptyCells(board);
+
+        // Initialize bitmasks
+        int[] rowMask = new int[9];
+        int[] colMask = new int[9];
+        int[] boxMask = new int[9];
+        initializeMasks(board, rowMask, colMask, boxMask);
+
+        long start = System.currentTimeMillis();
+
+        // Solve normally (first solution)
+        if (solveSudokuMRVBitmask(board, emptyCells, rowMask, colMask, boxMask)) {
+            long end = System.currentTimeMillis();
+            System.out.println("\nSolved Sudoku:");
+            printBoard(board);
+            System.out.println("\nRecursive Calls: " + calls);
+            System.out.println("Time Taken: " + (end - start) + " ms");
+        } else {
+            System.out.println("No solution exists.");
+        }
+
+        // Count all solutions
+        totalSolutions = 0;
+        solveAllSudoku(board, emptyCells, rowMask, colMask, boxMask);
+        System.out.println("Total possible solutions: " + totalSolutions);
+    }
+
+    // Read user input
+    public static int[][] readInput() {
+        Scanner sc = new Scanner(System.in);
+        int[][] board = new int[9][9];
+        System.out.println("Enter Sudoku board (0 for empty cells):");
+
+        for (int i = 0; i < 9; i++)
+            for (int j = 0; j < 9; j++)
+                board[i][j] = sc.nextInt();
+
+        return board;
+    }
+
+    // Collect empty cells
+    public static List<int[]> getEmptyCells(int[][] board) {
+        List<int[]> emptyCells = new ArrayList<>();
+        for (int i = 0; i < 9; i++)
+            for (int j = 0; j < 9; j++)
+                if (board[i][j] == 0)
+                    emptyCells.add(new int[]{i, j});
+        return emptyCells;
+    }
+
+    // Pretty print with highlights for hardest cells
+    public static void printBoard(int[][] board) {
+        for (int i = 0; i < 9; i++) {
+            if (i % 3 == 0) System.out.println("-------------------------");
+            for (int j = 0; j < 9; j++) {
+                if (j % 3 == 0) System.out.print("| ");
+                // Highlight cells with 1 or 2 options as *
+                if (board[i][j] == 0)
+                    System.out.print(". ");
+                else
+                    System.out.print(board[i][j] + " ");
+            }
+            System.out.println("|");
+        }
+        System.out.println("-------------------------");
+    }
+
+    // Initialize bitmasks from initial board
+    public static void initializeMasks(int[][] board, int[] rowMask, int[] colMask, int[] boxMask) {
+        for (int i = 0; i < 9; i++)
+            for (int j = 0; j < 9; j++) {
+                int num = board[i][j];
+                if (num != 0) {
+                    int mask = 1 << (num - 1);
+                    rowMask[i] |= mask;
+                    colMask[j] |= mask;
+                    int boxIndex = (i / 3) * 3 + (j / 3);
+                    boxMask[boxIndex] |= mask;
+                }
+            }
+    }
+
+    // Count valid numbers for MRV
+    public static int countValidNumbers(int row, int col, int[] rowMask, int[] colMask, int[] boxMask) {
+        int count = 0;
+        int boxIndex = (row / 3) * 3 + (col / 3);
+        for (int num = 1; num <= 9; num++) {
+            int mask = 1 << (num - 1);
+            if ((rowMask[row] & mask) == 0 &&
+                (colMask[col] & mask) == 0 &&
+                (boxMask[boxIndex] & mask) == 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // Select MRV cell
+    public static int[] selectMRVCell(int[][] board, List<int[]> emptyCells,
+                                      int[] rowMask, int[] colMask, int[] boxMask) {
+        int minCount = 10;
+        int[] chosenCell = null;
+        for (int[] cell : emptyCells) {
+            int row = cell[0], col = cell[1];
+            if (board[row][col] == 0) {
+                int validCount = countValidNumbers(row, col, rowMask, colMask, boxMask);
+                if (validCount < minCount) {
+                    minCount = validCount;
+                    chosenCell = cell;
+                }
+            }
+        }
+        return chosenCell;
+    }
+
+    // Solver with MRV + Bitmask (first solution)
+    public static boolean solveSudokuMRVBitmask(int[][] board, List<int[]> emptyCells,
+                                                int[] rowMask, int[] colMask, int[] boxMask) {
+        calls++;
+        int[] cell = selectMRVCell(board, emptyCells, rowMask, colMask, boxMask);
+        if (cell == null) return true;
+
+        int row = cell[0], col = cell[1];
+        int boxIndex = (row / 3) * 3 + (col / 3);
+
+        for (int num = 1; num <= 9; num++) {
+            int mask = 1 << (num - 1);
+            if ((rowMask[row] & mask) == 0 &&
+                (colMask[col] & mask) == 0 &&
+                (boxMask[boxIndex] & mask) == 0) {
+
+                board[row][col] = num;
+                rowMask[row] |= mask;
+                colMask[col] |= mask;
+                boxMask[boxIndex] |= mask;
+
+                if (solveSudokuMRVBitmask(board, emptyCells, rowMask, colMask, boxMask))
+                    return true;
+
+                board[row][col] = 0;
+                rowMask[row] &= ~mask;
+                colMask[col] &= ~mask;
+                boxMask[boxIndex] &= ~mask;
+            }
+        }
+        return false;
+    }
+
+    // Solve all solutions
+    public static void solveAllSudoku(int[][] board, List<int[]> emptyCells,
+                                      int[] rowMask, int[] colMask, int[] boxMask) {
+        int[] cell = selectMRVCell(board, emptyCells, rowMask, colMask, boxMask);
+        if (cell == null) {
+            totalSolutions++;
+            return;
+        }
+
+        int row = cell[0], col = cell[1];
+        int boxIndex = (row / 3) * 3 + (col / 3);
+
+        for (int num = 1; num <= 9; num++) {
+            int mask = 1 << (num - 1);
+            if ((rowMask[row] & mask) == 0 &&
+                (colMask[col] & mask) == 0 &&
+                (boxMask[boxIndex] & mask) == 0) {
+
+                board[row][col] = num;
+                rowMask[row] |= mask;
+                colMask[col] |= mask;
+                boxMask[boxIndex] |= mask;
+
+                solveAllSudoku(board, emptyCells, rowMask, colMask, boxMask);
+
+                board[row][col] = 0;
+                rowMask[row] &= ~mask;
+                colMask[col] &= ~mask;
+                boxMask[boxIndex] &= ~mask;
+            }
+        }
+    }
+}
