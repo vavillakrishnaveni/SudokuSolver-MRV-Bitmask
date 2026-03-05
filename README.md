@@ -70,7 +70,7 @@ The program prints:
 
 ## 📸 Project Screenshots
 
-![Output Screenshot](images/demo.png)
+![Output Screenshot](https://github.com/vavillakrishnaveni/SudokuSolver-MRV-Bitmask/blob/main/demo.png)
 
 ---
 
