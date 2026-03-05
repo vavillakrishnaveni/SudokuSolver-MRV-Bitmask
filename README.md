@@ -1,21 +1,97 @@
-A **Sudoku Solver** is a program designed to automatically solve a 9×9 **Sudoku** puzzle using algorithmic techniques.
-The puzzle consists of a partially filled grid divided into nine 3×3 subgrids.
-The objective is to fill the empty cells with numbers from 1 to 9.
-Each number must appear only once in every row.
-Each number must appear only once in every column.
-Each number must appear only once in every 3×3 subgrid.
+# 🧩 Sudoku Solver (Backtracking Algorithm)
 
-The solver typically uses a backtracking algorithm to find the correct solution.
-It scans the grid to locate an empty cell.
-Then it tries placing numbers from 1 to 9 sequentially.
-Before placing a number, it checks whether the placement is valid.
-If the number satisfies all constraints, the algorithm moves to the next empty cell.
-If a conflict occurs, it removes the number and tries the next possible value.
-If no number works, the algorithm backtracks to the previous cell.
+## 🚀 Project Description
 
-This process continues recursively until the puzzle is completely solved.
-The project demonstrates strong understanding of recursion and backtracking.
-It also improves logical thinking and constraint validation skills.
-The solver ensures accuracy by systematically exploring all possible combinations.
-Sudoku Solver is a classic example of a constraint satisfaction problem.
-It is widely used to practice problem-solving in Data Structures and Algorithms.
+This project is a **Java-based Sudoku Solver** that uses the **Backtracking algorithm** to solve Sudoku puzzles efficiently.
+It takes a 9×9 grid as input and fills in the missing numbers while following Sudoku rules.
+
+---
+
+## 🔥 Features
+
+* Uses **Backtracking Algorithm**
+* Efficient recursive solution
+* Counts number of recursive calls
+* Accepts user input from console
+* Prints solved board
+
+---
+
+## 🛠 Technologies Used
+
+* Java
+* Recursion
+* Stack/Backtracking Logic
+
+---
+
+## 📥 How to Run
+
+### Compile
+
+```bash
+javac SudokuSolver.java
+```
+
+### Run
+
+```bash
+java SudokuSolver
+```
+
+Enter the 9×9 Sudoku grid as input.
+
+---
+
+## 📌 Input Format
+
+Enter 9 rows.
+Use `0` for empty cells.
+
+Example:
+
+```
+5 3 0 0 7 0 0 0 0
+6 0 0 1 9 5 0 0 0
+0 9 8 0 0 0 0 6 0
+...
+```
+
+---
+
+## ✅ Output
+
+The program prints:
+
+* Solved Sudoku Grid
+* Number of Recursive Calls
+
+---
+
+## 📸 Project Screenshots
+
+![Output Screenshot](SCREENSHOT/demo.png)
+
+---
+
+## 💡 Example Output
+
+```
+Solved Sudoku:
+5 3 4 6 7 8 9 1 2
+...
+Recursive Calls: 1523
+```
+
+---
+
+## 🎯 Future Improvements
+
+* Add GUI version
+* Add file upload input
+* Add web-based Sudoku solver
+* Add animation for solving steps
+
+---
+
+⭐ If you like this project, please star the repository!
