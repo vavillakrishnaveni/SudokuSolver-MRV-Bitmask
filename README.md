@@ -70,7 +70,7 @@ The program prints:
 
 ## 📸 Project Screenshots
 
-![Output Screenshot](SCREENSHOT/demo.png)
+![Output Screenshot](images/demo.png)
 
 ---
 
